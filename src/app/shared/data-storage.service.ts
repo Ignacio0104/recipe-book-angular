@@ -4,14 +4,38 @@ import { Recipe } from '../recipes/recipe.model';
 import { RecipeService } from '../recipes/recipe.service';
 import { exhaustMap, map, take, tap } from 'rxjs';
 import { AuthService } from '../Auth/auth.service';
+import { ShoppingListService } from '../shopping-list/shopping-list.service';
+import { Ingredient } from './ingredient.model';
 
 @Injectable({ providedIn: 'root' })
 export class DataStorageService {
   constructor(
     private http: HttpClient,
     private recipeService: RecipeService,
-    private authService: AuthService
+    private shoppingListService: ShoppingListService
   ) {}
+
+  storeShoppingList() {
+    const shoppingListItems = this.shoppingListService.getIngredients();
+    this.http
+      .put(
+        'https://angular-final-project-5d150-default-rtdb.europe-west1.firebasedatabase.app/shoppingListItems.json',
+        shoppingListItems
+      )
+      .subscribe((res) => console.log(res));
+  }
+
+  fetchShoppingListItem() {
+    return this.http
+      .get<Ingredient[]>(
+        'https://angular-final-project-5d150-default-rtdb.europe-west1.firebasedatabase.app/shoppingListItems.json'
+      )
+      .pipe(
+        tap((ingredients) => {
+          this.shoppingListService.setIngredients(ingredients);
+        })
+      );
+  }
 
   storeRecipes() {
     const recipes = this.recipeService.getRecipes();

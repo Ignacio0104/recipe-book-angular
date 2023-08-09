@@ -21,11 +21,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
   onSaveData() {
+    this.dataStorageService.storeShoppingList();
     this.dataStorageService.storeRecipes();
   }
 
   onFetchData() {
     this.dataStorageService.fetchRecipes().subscribe();
+    this.dataStorageService.fetchShoppingListItem().subscribe();
   }
 
   onLogout() {
